@@ -32,6 +32,12 @@
     <color name="blue_bg_06">#0F1565C0</color>
     <color name="blue_border_20">#335BB5FF</color>
 
+    <!-- 폴더 정리 버튼용 청록색 -->
+    <color name="teal">#00BCD4</color>
+    <color name="teal_lt">#26C6DA</color>
+    <color name="teal_bg_08">#1400BCD4</color>
+    <color name="teal_border_25">#4000BCD4</color>
+
     <!-- 기존 호환 -->
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>

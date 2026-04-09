@@ -563,6 +563,71 @@
                     android:stateListAnimator="@null" />
             </LinearLayout>
 
+            <!-- ── 6. 현장명 폴더 정리 카드 ── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/bg_card"
+                android:layout_marginBottom="14dp">
+
+                <!-- 카드 라벨 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="14dp"
+                    android:paddingTop="10dp">
+
+                    <View
+                        android:layout_width="3dp"
+                        android:layout_height="10dp"
+                        android:background="@color/teal" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🗂️  현장명 폴더 정리"
+                        android:textColor="@color/text_dim"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.1"
+                        android:textAllCaps="true"
+                        android:layout_marginStart="5dp" />
+                </LinearLayout>
+
+                <!-- 설명 텍스트 -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="현재 입력된 현장명으로 시작하는 사진을\n폴더를 생성하여 자동으로 이동합니다"
+                    android:textColor="@color/text_dim"
+                    android:textSize="10sp"
+                    android:lineSpacingMultiplier="1.5"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginTop="8dp" />
+
+                <!-- 정리 버튼 -->
+                <Button
+                    android:id="@+id/btnOrganizeFolder"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text="🗂️  현장명 폴더 생성 / 정리"
+                    android:textColor="@color/teal_lt"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:background="@drawable/bg_btn_organize"
+                    android:layout_marginStart="14dp"
+                    android:layout_marginEnd="14dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="13dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:stateListAnimator="@null" />
+            </LinearLayout>
+
             <!-- ── 하단 힌트 ── -->
             <TextView
                 android:id="@+id/tvBottomHint"

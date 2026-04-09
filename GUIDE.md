@@ -1,157 +1,178 @@
-# 현장 사진 파일명 자동 변경 앱 — 제작 가이드
+# Smart Field Snap — 개발 지침서
 
-## 프로젝트 개요
-
-갤럭시 폰/태블릿에서 사진 촬영 시 파일명을 `img-001`, `img-002` 형식으로 자동 변경하고,
-현장 이동 시 버튼 하나로 번호를 리셋하는 안드로이드 앱.
+> 갤럭시 현장 사진 파일명 자동 변경 + 폴더 정리 안드로이드 앱  
+> 마지막 업데이트: 2026-04-10 | 빌드 경로: `android studio/app/build/outputs/apk/debug/app-debug.apk`
 
 ---
 
-## 1단계: 환경 준비 (딱 한 번만)
+## 프로젝트 기본 정보
 
-### 필수 설치 목록
-1. **Android Studio** — [developer.android.com/studio](https://developer.android.com/studio) 에서 다운로드
-   - 실제로 쓰지 않아도 내부 SDK(빌드 도구)가 필요함
-2. **Java JDK 17** — Android Studio 설치 시 자동 포함
-3. **Claude Code** — 현재 사용 중인 이 도구
-
-### 핸드폰 개발자 모드 활성화
-1. 갤럭시 `설정` → `휴대전화 정보` → `소프트웨어 정보`
-2. `빌드 번호`를 **7번 연속 터치** → "개발자 모드 활성화" 메시지 확인
-3. `설정` → `개발자 옵션` → `USB 디버깅` 켜기
-
----
-
-## 2단계: Claude Code에서 프로젝트 생성
-
-### 프로젝트 초기 생성 프롬프트 (그대로 복사해서 사용)
-
-```
-새 안드로이드 Kotlin 프로젝트를 생성해줘. 패키지명은 com.jaeuk.photorename이야.
-
-다음 기능을 포함해줘:
-1. 사용자가 '접두어(예: img-)'를 입력할 수 있는 칸
-2. 사진 촬영 시 '접두어-001'부터 순차적으로 번호가 붙으며 이름이 자동 변경
-3. 화면 위에 항상 떠 있는 '플로팅 버튼' — 누르면 번호가 001로 초기화
-4. 앱이 꺼져 있어도 백그라운드에서 계속 작동 (Foreground Service 사용)
-5. 안드로이드 14(API 34) 환경에서 MediaStore API로 파일명 변경
-
-다음 파일을 각각 분리해서 만들어줘:
-- AndroidManifest.xml
-- MainActivity.kt
-- FloatingService.kt (플로팅 버튼 서비스)
-- activity_main.xml (레이아웃)
-- build.gradle (앱 수준)
-
-안드로이드 13 이상의 READ_MEDIA_IMAGES 권한 요청 코드도 반드시 포함해줘.
-```
-
----
-
-## 3단계: 기능 추가 프롬프트 모음
-
-### 현장명 포함 파일명
-```
-현재 코드에서 파일명 형식을 '[현장명]-[접두어]-[번호]' 조합으로 수정해줘.
-예: 현장명=A현장, 접두어=img, 번호=001 → A현장-img-001
-현장명도 사용자가 직접 입력할 수 있는 칸을 UI에 추가해줘.
-```
-
-### 일괄 변환 기능
-```
-기존에 찍어둔 사진들을 한꺼번에 이름 바꾸는 '일괄 변경' 기능을 추가해줘.
-사진의 EXIF 데이터에서 촬영 날짜를 읽어와서 정렬 순서를 결정하고,
-사용자가 지정한 접두어 형식으로 001부터 순서대로 이름을 변경해줘.
-```
-
-### 오류 수정 요청 (에러 발생 시)
-```
-아래 오류가 발생했어. 원인을 분석하고 수정해줘:
-[adb logcat 또는 에러 메시지 붙여넣기]
-```
-
----
-
-## 4단계: 앱 빌드 (APK 파일 생성)
-
-터미널에서 아래 명령어 실행:
-
-```bash
-# 프로젝트 폴더로 이동 후
-./gradlew assembleDebug
-```
-
-결과 파일 위치:
-```
-app/build/outputs/apk/debug/app-debug.apk
-```
-
----
-
-## 5단계: 핸드폰에 설치
-
-### 방법 A — 카카오톡/이메일 전송
-1. `app-debug.apk` 파일을 카카오톡 '나와의 채팅'으로 전송
-2. 핸드폰에서 파일 다운로드
-3. 파일 실행 → "출처를 알 수 없는 앱" 경고 시 `허용` 선택
-4. 설치 완료
-
-### 방법 B — USB 직접 설치
-1. USB 케이블로 PC와 핸드폰 연결
-2. 터미널에서 실행:
-```bash
-adb install app/build/outputs/apk/debug/app-debug.apk
-```
-
----
-
-## 6단계: 앱 권한 설정 (중요!)
-
-앱 첫 실행 시 반드시 허용해야 하는 권한:
-- **사진 및 동영상 접근** → `항상 허용`
-- **다른 앱 위에 표시** → `허용` (플로팅 버튼용)
-
----
-
-## 기술 참고 정보
-
-### 핵심 기술 스택
-| 기술 | 용도 |
+| 항목 | 값 |
 |---|---|
-| ContentObserver | 새 사진 생성 감지 |
-| MediaStore API | 파일명 변경 (Scoped Storage) |
-| ContentResolver.update() | DISPLAY_NAME 수정 |
-| Foreground Service | 백그라운드 동작 |
-| SharedPreferences | 접두어/카운터 저장 |
-| WindowManager | 플로팅 버튼 표시 |
-| ExifInterface | 사진 메타데이터 읽기 |
-| Room | 현장 목록 저장 |
+| 패키지명 | `com.jaeuk.photorename` |
+| minSdk | 26 (Android 8.0) |
+| targetSdk | 34 |
+| 언어 | Kotlin |
+| 빌드 폴더 | `android studio/` ← Gradle 빌드는 이 폴더에서 실행 |
+| 소스 폴더 | `app/` ← 실제 편집은 여기서 |
 
-### 권한 목록
+> **주의**: 소스(`app/`)와 빌드(`android studio/`) 두 폴더가 분리되어 있음.  
+> 파일 수정 후 반드시 `android studio/` 폴더에도 동일 파일 복사해야 빌드에 반영됨.
+
+---
+
+## 핵심 파일 구조
+
+```
+app/src/main/
+├── java/com/jaeuk/photorename/
+│   ├── MainActivity.kt          ← UI 제어, 설정 저장, 폴더 정리 기능
+│   └── FloatingService.kt       ← 백그라운드 서비스, 사진 감지+이름변경
+├── res/
+│   ├── layout/activity_main.xml ← 앱 UI 레이아웃
+│   ├── drawable/                ← 버튼/카드 배경 (bg_btn_*.xml 등)
+│   └── values/colors.xml        ← 다크 UI 색상 팔레트
+└── AndroidManifest.xml
+```
+
+---
+
+## SharedPreferences 키 목록 (`PhotoRenamePrefs`)
+
+| 키 | 타입 | 설명 |
+|---|---|---|
+| `prefix` | String | 접두어 (기본값: `img`) |
+| `site_name` | String | 현장명 |
+| `counter` | Int | 현재 촬영 번호 (기본값: 1) |
+| `folder_uri` | String | SAF 감시 폴더 URI |
+
+---
+
+## 핵심 기능 1 — 파일명 자동 변경 (`FloatingService.kt`)
+
+### 동작 흐름
+1. `ContentObserver`가 `MediaStore.Images.Media.EXTERNAL_CONTENT_URI` 전체 감시
+2. 새 URI 감지 → `IS_PENDING=1`이면 1.5초 대기 후 재시도 (최대 4회)
+3. 파일 경로가 선택된 감시 폴더 내에 있는지 확인
+4. 갤럭시 카메라 파일명 패턴 확인 (아래 참조)
+5. `DocumentsContract.renameDocument()` 로 이름 변경 → 카운터 +1
+
+### 갤럭시 카메라 파일명 패턴 (이 중 하나면 이름 변경 대상)
+```
+20260409_213940.jpg   → \d{8}_\d{6}\.jpg
+IMG_2026xxxx.jpg      → IMG_\d+.*\.jpg
+20260409xxx.jpg       → .*\d{8}.*\.jpg
+1234.jpg              → \d+\.jpg
+```
+
+### 생성 파일명 형식
+```
+현장명 있을 때: {site_name}-{prefix}-{001}.jpg   예) A현장-외벽-001.jpg
+현장명 없을 때: {prefix}-{001}.jpg               예) img-001.jpg
+```
+
+### 중복 방지 메커니즘
+- `processingUris` (Set): 동시에 같은 URI 처리 방지
+- `completedUris` (ArrayDeque, 최대 100개): 완료된 URI 재처리 방지
+
+---
+
+## 핵심 기능 2 — 현장명 폴더 생성/정리 (`MainActivity.kt`)
+
+### 동작 흐름
+1. 버튼 클릭 → 현장명 + 감시 폴더 유효성 확인
+2. 확인 다이얼로그 → "정리 시작" 선택
+3. `Dispatchers.IO`에서 `DocumentFile.fromTreeUri()`로 감시 폴더 접근
+4. 현장명과 동일한 하위 폴더 찾기 → 없으면 `createDirectory()` 생성
+5. 감시 폴더 내 파일 순회 → `name.startsWith(siteName)` 인 파일만 선별
+6. `moveFile()`: InputStream 복사 → 원본 삭제 (SAF 복사+삭제 방식, 전 API 호환)
+7. 동일 파일명 이미 존재하면 스킵 (중복 방지)
+
+### moveFile 핵심 코드 구조
+```kotlin
+contentResolver.openInputStream(source.uri) → openOutputStream(newFile.uri) → copyTo()
+source.delete()  // 복사 성공 후 원본 삭제
+// 실패 시 newFile.delete() 로 빈 파일 정리
+```
+
+---
+
+## UI 구성 (위→아래 순서)
+
+| 카드/영역 | 기능 |
+|---|---|
+| 헤더 | 앱명 + 서비스 상태 뱃지 (대기중/서비스중) |
+| 감시 폴더 선택 | SAF OpenDocumentTree, DCIM 초기 위치 |
+| 현장 정보 입력 | 현장명(etSiteName) + 접두어(etPrefix) |
+| 파일명 미리보기 | 실시간 반영, 구성요소 칩 표시 |
+| 촬영 번호 | 현재 카운터 + 번호 초기화 버튼 |
+| 서비스 시작/중지 | Foreground Service 시작·중지 |
+| **현장명 폴더 정리** | 폴더 생성+사진 이동 (청록색 카드) |
+
+---
+
+## 빌드 & 배포
+
+```bash
+# 빌드 (android studio 폴더에서)
+cd "android studio"
+./gradlew assembleDebug
+
+# APK 경로
+android studio/app/build/outputs/apk/debug/app-debug.apk
+```
+
+> 소스 수정 후 빌드 전 체크리스트:
+> 1. `app/` 수정 완료
+> 2. `android studio/` 에 동일 파일 복사
+> 3. `./gradlew assembleDebug` 실행
+
+---
+
+## 권한 목록 (AndroidManifest.xml)
+
 ```xml
-<!-- AndroidManifest.xml에 들어가는 권한들 -->
-<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />        <!-- API 33+ -->
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />    <!-- API 32 이하 -->
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />   <!-- API 28 이하 -->
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 ```
 
 ---
 
-## 자주 발생하는 문제 및 해결
+## 주요 의존성 (`build.gradle.kts`)
 
-| 증상 | 원인 | 해결 |
-|---|---|---|
-| 사진 이름이 안 바뀜 | 권한 미허용 | 앱 설정에서 사진 접근 권한 '항상 허용'으로 변경 |
-| 앱 종료 시 작동 안 함 | 백그라운드 제한 | 배터리 최적화 예외 앱으로 등록 |
-| 플로팅 버튼 안 보임 | 오버레이 권한 없음 | '다른 앱 위에 표시' 권한 허용 |
-| 빌드 오류 | SDK 미설치 | Android Studio 재설치 후 SDK 업데이트 |
+```kotlin
+implementation(libs.androidx.core.ktx)
+implementation(libs.androidx.appcompat)
+implementation(libs.material)
+implementation(libs.kotlinx.coroutines.android)
+implementation(libs.androidx.documentfile)     // SAF DocumentFile
+```
 
 ---
 
-## 개발 팁
+## 자주 발생하는 빌드 오류
 
-- **처음 목표**: 파일명 하나라도 바뀌면 성공. 완벽한 앱보다 동작하는 앱부터.
-- **오류 발생 시**: `adb logcat` 출력을 복사해서 Claude에게 붙여넣으면 즉시 수정해줌.
-- **기능 추가**: 한 번에 다 만들지 말고, 기본 기능 동작 확인 후 하나씩 추가.
-- **APK 배포**: `Build → Generate Signed APK`로 서명된 APK 만들면 다른 직원 폰에도 설치 가능.
+| 오류 | 원인 | 해결 |
+|---|---|---|
+| `resource color/purple_500 not found` | themes.xml이 기본 색상 참조 | themes.xml에서 @color/orange, @color/teal 등 앱 색상으로 교체 |
+| `Unresolved reference 'bg_status_active'` | android studio/ drawable 누락 | app/drawable/ → android studio/drawable/ 복사 |
+| `Unresolved reference 'count개'` | 한글이 변수명으로 인식됨 | `$count개` → `${count}개` 로 수정 |
+| `Unable to access jarfile gradle-wrapper.jar` | 루트 폴더에서 실행 | `android studio/` 폴더에서 실행할 것 |
+
+---
+
+## 앱 설치 후 필수 설정
+
+1. 사진 접근 권한 → **항상 허용**
+2. 배터리 최적화 → **예외 앱 등록** (백그라운드 유지)
+3. 앱 실행 → 감시 폴더 선택 (DCIM/Camera) → 서비스 시작
+
+---
+
+## Git 저장소
+
+`https://github.com/uk2y-getitgit/pic-numinc.git` — master 브랜치

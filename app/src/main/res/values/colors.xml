@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- HTML 디자인 팔레트 동기화 -->
+    <color name="bg">#0E0F13</color>
+    <color name="surface">#181A21</color>
+    <color name="card">#1F2230</color>
+    <color name="border">#2A2D3E</color>
+    <color name="border_hi">#3A3F5C</color>
+    <color name="text_primary">#E8EAF0</color>
+    <color name="text_dim">#7A7F96</color>
+
+    <color name="orange">#FF6B00</color>
+    <color name="orange_lt">#FF8C33</color>
+    <color name="orange_dk">#CC5500</color>
+
+    <color name="green">#00C851</color>
+    <color name="red_accent">#FF3B3B</color>
+    <color name="yellow">#FFD600</color>
+
+    <!-- 반투명 색상 -->
+    <color name="orange_bg_05">#0DFF6B00</color>
+    <color name="orange_border_20">#33FF6B00</color>
+    <color name="green_bg_12">#1F00C851</color>
+    <color name="green_border_25">#4000C851</color>
+    <color name="red_bg_12">#1FFF3B3B</color>
+    <color name="red_border_30">#4DFF3B3B</color>
+    <color name="yellow_bg_08">#14FFD600</color>
+    <color name="yellow_border_25">#40FFD600</color>
+    <color name="white_03">#08FFFFFF</color>
+    <color name="dim_bg_10">#1A7A7F96</color>
+    <color name="blue_lt">#5BB5FF</color>
+    <color name="blue_bg_06">#0F1565C0</color>
+    <color name="blue_border_20">#335BB5FF</color>
+
+    <!-- 기존 호환 -->
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+</resources>

@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Field Snap - UI 미리보기</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+  :root {
+    --orange:    #FF6B00;
+    --orange-lt: #FF8C33;
+    --orange-dk: #CC5500;
+    --bg:        #0E0F13;
+    --surface:   #181A21;
+    --card:      #1F2230;
+    --border:    #2A2D3E;
+    --border-hi: #3A3F5C;
+    --text:      #E8EAF0;
+    --text-dim:  #7A7F96;
+    --green:     #00C851;
+    --red:       #FF3B3B;
+    --yellow:    #FFD600;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #070809;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+
+  /* ── 폰 목업 ── */
+  .phone-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .phone-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .phone {
+    width: 375px;
+    background: #111218;
+    border-radius: 44px;
+    border: 2px solid #2A2D3E;
+    box-shadow:
+      0 0 0 1px #0A0B0D,
+      0 32px 80px rgba(0,0,0,0.8),
+      inset 0 1px 0 rgba(255,255,255,0.05);
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* 노치 */
+  .notch {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 120px; height: 30px;
+    background: #111218;
+    border-radius: 0 0 20px 20px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .notch-cam { width: 10px; height: 10px; background: #1E2030; border-radius: 50%; border: 1px solid #2A2D3E; }
+  .notch-speaker { width: 40px; height: 4px; background: #1A1C28; border-radius: 4px; }
+
+  .screen {
+    padding: 38px 0 0;
+    min-height: 800px;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+  }
+  .screen::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(255,107,0,0.07) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* ── 상태바 ── */
+  .statusbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 24px 0;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .bat { width: 18px; height: 9px; border: 1px solid var(--text-dim); border-radius: 2px; position: relative; display: inline-block; vertical-align: middle; margin-left: 4px; }
+  .bat::after { content: ''; position: absolute; top: 1.5px; left: 1.5px; width: 70%; height: calc(100% - 3px); background: var(--text-dim); border-radius: 1px; }
+
+  /* ── 앱 헤더 ── */
+  .app-header {
+    padding: 12px 20px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .app-name {
+    font-size: 19px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+  .app-name span { color: var(--orange); }
+  .app-ver { font-size: 10px; color: var(--text-dim); margin-top: 2px; letter-spacing: 0.04em; }
+
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    transition: all 0.3s;
+    cursor: default;
+  }
+  .status-badge.active {
+    background: rgba(0,200,81,0.12);
+    color: var(--green);
+    border: 1px solid rgba(0,200,81,0.25);
+  }
+  .status-badge.inactive {
+    background: rgba(122,127,150,0.1);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    transition: all 0.3s;
+  }
+  .status-badge.active .status-dot {
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 1.5s infinite;
+  }
+  .status-badge.inactive .status-dot { background: var(--text-dim); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.35; }
+  }
+
+  /* ── 본문 ── */
+  .content {
+    padding: 14px 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    flex: 1;
+  }
+
+  /* ── 카드 ── */
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .card-label {
+    padding: 10px 14px 0;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .card-label::before {
+    content: '';
+    width: 3px; height: 10px;
+    background: var(--orange);
+    border-radius: 2px;
+  }
+
+  /* ── 입력 필드 ── */
+  .field-row {
+    padding: 8px 14px 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .field-inner {
+    display: flex;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .field-inner:focus-within {
+    border-color: var(--orange);
+    box-shadow: 0 0 0 2px rgba(255,107,0,0.15);
+  }
+  .field-pfx {
+    padding: 0 10px;
+    font-size: 11px;
+    color: var(--text-dim);
+    background: rgba(255,255,255,0.03);
+    border-right: 1px solid var(--border);
+    height: 42px;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .field-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 13px;
+    font-family: 'Noto Sans KR', sans-serif;
+    padding: 10px 10px;
+    height: 42px;
+  }
+  .field-input::placeholder { color: var(--text-dim); }
+  .field-clear {
+    width: 36px; height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 13px;
+    margin-right: 3px;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+  .field-clear:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+
+  /* ── 미리보기 카드 ── */
+  .preview-card {
+    background: rgba(255,107,0,0.05);
+    border-color: rgba(255,107,0,0.2);
+  }
+  .preview-inner { padding: 8px 14px 14px; }
+  .preview-desc { font-size: 10px; color: var(--text-dim); margin-bottom: 7px; }
+  .preview-name {
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--orange-lt);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    word-break: break-all;
+    min-height: 44px;
+  }
+  .preview-chips {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .chip {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+  }
+  .chip-site { background: rgba(255,107,0,0.15);  color: var(--orange-lt); border: 1px solid rgba(255,107,0,0.3); }
+  .chip-pre  { background: rgba(0,200,81,0.10);   color: #3DD68C;          border: 1px solid rgba(0,200,81,0.25); }
+  .chip-num  { background: rgba(122,127,150,0.12); color: var(--text-dim); border: 1px solid var(--border-hi); }
+  .chip-ext  { background: rgba(255,214,0,0.10);  color: var(--yellow);   border: 1px solid rgba(255,214,0,0.2); }
+
+  /* ── 번호 카운터 ── */
+  .counter-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px 13px;
+  }
+  .counter-display {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+  }
+  .counter-num {
+    font-size: 38px;
+    font-weight: 900;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--orange);
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .counter-unit { font-size: 12px; color: var(--text-dim); }
+
+  .btn-reset {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: rgba(255,214,0,0.08);
+    border: 1px solid rgba(255,214,0,0.25);
+    border-radius: 10px;
+    color: var(--yellow);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-reset:hover  { background: rgba(255,214,0,0.15); }
+  .btn-reset:active { transform: scale(0.96); }
+
+  /* ── 서비스 버튼 그룹 ── */
+  .btn-group {
+    display: flex;
+    gap: 10px;
+  }
+  .btn-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 16px 8px;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    transition: transform 0.1s, box-shadow 0.15s, opacity 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-main:active { transform: scale(0.96); }
+
+  .btn-start {
+    background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dk) 100%);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(255,107,0,0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+  .btn-start::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 55%; height: 100%;
+    background: rgba(255,255,255,0.1);
+    transform: skewX(-20deg);
+    transition: left 0.45s;
+  }
+  .btn-start:hover::before { left: 160%; }
+  .btn-start:disabled {
+    background: rgba(255,107,0,0.3);
+    box-shadow: none;
+    cursor: not-allowed;
+    color: rgba(255,255,255,0.5);
+  }
+
+  .btn-stop {
+    background: rgba(255,59,59,0.10);
+    color: var(--red);
+    border: 1px solid rgba(255,59,59,0.3);
+  }
+  .btn-stop:hover  { background: rgba(255,59,59,0.18); }
+  .btn-stop:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .btn-icon { font-size: 20px; }
+  .btn-sub  { font-size: 10px; font-weight: 400; opacity: 0.70; }
+
+  /* ── 하단 힌트 ── */
+  .bottom-hint {
+    padding: 4px 16px 14px;
+    font-size: 10px;
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  /* ── 플로팅 버튼 (서비스 실행 시 오버레이) ── */
+  .floating-btn {
+    position: absolute;
+    top: 110px;
+    right: 18px;
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, #FFD600 0%, #FFA800 100%);
+    border-radius: 14px;
+    border: none;
+    cursor: grab;
+    box-shadow: 0 4px 16px rgba(255,214,0,0.5), 0 2px 6px rgba(0,0,0,0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    color: #1A1400;
+    font-weight: 900;
+    font-size: 9px;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: opacity 0.3s, transform 0.1s, box-shadow 0.15s;
+    z-index: 20;
+    user-select: none;
+    display: none; /* 초기에는 숨김, 서비스 시작 시 표시 */
+  }
+  .floating-btn.visible { display: flex; }
+  .floating-btn:hover { box-shadow: 0 6px 20px rgba(255,214,0,0.7); }
+  .floating-btn:active { transform: scale(0.93); cursor: grabbing; }
+  .floating-icon { font-size: 18px; }
+
+  /* 드래그 힌트 */
+  .drag-hint {
+    position: absolute;
+    top: 168px;
+    right: 12px;
+    font-size: 9px;
+    color: var(--yellow);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    background: rgba(255,214,0,0.1);
+    border: 1px solid rgba(255,214,0,0.2);
+    border-radius: 6px;
+    padding: 3px 6px;
+    white-space: nowrap;
+  }
+  .drag-hint.visible { opacity: 1; }
+
+  /* ── 오른쪽 가이드 패널 ── */
+  .guide {
+    max-width: 320px;
+    min-width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding-top: 8px;
+  }
+  .guide-title {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--text);
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
+  .guide-title em { color: var(--orange); font-style: normal; }
+  .guide-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.7;
+    margin-top: -10px;
+  }
+
+  .divider { height: 1px; background: var(--border); border: none; }
+
+  /* 팔레트 */
+  .section-title {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+  .swatch { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+  .swatch-color {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .swatch-name { font-size: 9px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; text-align: center; line-height: 1.4; }
+
+  /* 기능 목록 */
+  .feature-list { display: flex; flex-direction: column; gap: 9px; }
+  .feature-item { display: flex; gap: 9px; align-items: flex-start; }
+  .feature-icon {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .fi-org { background: rgba(255,107,0,0.12); }
+  .fi-yel { background: rgba(255,214,0,0.10); }
+  .fi-grn { background: rgba(0,200,81,0.10); }
+  .fi-red { background: rgba(255,59,59,0.10); }
+  .feature-text h4 { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .feature-text p  { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+
+  /* 상호작용 안내 */
+  .interact-note {
+    background: rgba(255,107,0,0.06);
+    border: 1px solid rgba(255,107,0,0.18);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+  .interact-note strong { color: var(--orange-lt); }
+
+  @media (max-width: 780px) {
+    body { padding: 24px 12px; }
+    .guide { max-width: 375px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── 폰 목업 ── -->
+<div class="phone-wrap">
+  <div class="phone-label">📱 Android UI Preview · 인터랙티브</div>
+  <div class="phone">
+    <div class="notch">
+      <div class="notch-cam"></div>
+      <div class="notch-speaker"></div>
+    </div>
+
+    <!-- 플로팅 버튼 (서비스 ON 시 표시) -->
+    <button class="floating-btn" id="floatingBtn" title="번호 초기화 (드래그 이동 가능)">
+      <span class="floating-icon">🔄</span>
+      <span>초기화</span>
+    </button>
+    <div class="drag-hint" id="dragHint">드래그로 이동</div>
+
+    <div class="screen">
+      <!-- 상태바 -->
+      <div class="statusbar">
+        <span>09:41</span>
+        <div style="display:flex;align-items:center;gap:4px;">
+          <span>▲▲▲</span>
+          <span>WiFi</span>
+          <div class="bat"></div>
+        </div>
+      </div>
+
+      <!-- 앱 헤더 -->
+      <div class="app-header">
+        <div>
+          <div class="app-name">📸 Smart <span>Field Snap</span></div>
+          <div class="app-ver">현장사진 자동 이름변경</div>
+        </div>
+        <div class="status-badge inactive" id="statusBadge">
+          <div class="status-dot"></div>
+          <span id="statusText">대기 중</span>
+        </div>
+      </div>
+
+      <!-- 본문 -->
+      <div class="content">
+
+        <!-- 0. 감시 폴더 선택 -->
+        <div class="card">
+          <div class="card-label">📁 감시 폴더 선택</div>
+          <div style="padding:8px 14px 13px; display:flex; flex-direction:column; gap:7px;">
+            <div id="folderPath" style="
+              background:var(--surface);
+              border:1px solid var(--border-hi);
+              border-radius:10px;
+              padding:9px 12px;
+              font-size:11px;
+              color:var(--text-dim);
+              font-family:'JetBrains Mono',monospace;
+              white-space:nowrap;
+              overflow:hidden;
+              text-overflow:ellipsis;
+            ">폴더 미선택 — 기본 카메라(DCIM) 폴더 감시</div>
+            <button onclick="selectFolder()" style="
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              gap:7px;
+              background:rgba(21,101,192,0.12);
+              border:1px solid rgba(21,101,192,0.35);
+              border-radius:10px;
+              padding:10px 14px;
+              color:#5BB5FF;
+              font-size:12px;
+              font-weight:700;
+              font-family:'Noto Sans KR',sans-serif;
+              cursor:pointer;
+              transition:background 0.15s;
+            " onmouseover="this.style.background='rgba(21,101,192,0.22)'"
+               onmouseout="this.style.background='rgba(21,101,192,0.12)'">
+              📂 폴더 선택
+            </button>
+          </div>
+        </div>
+
+        <!-- 1. 현장 정보 입력 -->
+        <div class="card">
+          <div class="card-label">🏗️ 현장 정보 입력</div>
+          <div class="field-row">
+            <div class="field-inner">
+              <div class="field-pfx">현장명</div>
+              <input class="field-input" id="inputSite" type="text"
+                     placeholder="예) 강남OO빌딩" value="강남OO빌딩">
+              <div class="field-clear" onclick="clearField('inputSite')">✕</div>
+            </div>
+            <div class="field-inner">
+              <div class="field-pfx">접두어</div>
+              <input class="field-input" id="inputPrefix" type="text"
+                     placeholder="예) 외벽점검" value="외벽점검">
+              <div class="field-clear" onclick="clearField('inputPrefix')">✕</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. 파일명 미리보기 -->
+        <div class="card preview-card">
+          <div class="card-label">👁️ 파일명 미리보기</div>
+          <div class="preview-inner">
+            <div class="preview-desc">다음 촬영 사진에 적용될 파일명</div>
+            <div class="preview-name" id="previewName">
+              강남OO빌딩-외벽점검-001.jpg
+            </div>
+            <div class="preview-chips" id="previewChips">
+              <span class="chip chip-site" id="chipSite">강남OO빌딩</span>
+              <span class="chip chip-pre"  id="chipPre">외벽점검</span>
+              <span class="chip chip-num"  id="chipNum">001</span>
+              <span class="chip chip-ext">jpg</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. 번호 카운터 -->
+        <div class="card">
+          <div class="card-label">🔢 촬영 번호</div>
+          <div class="counter-row">
+            <div class="counter-display">
+              <span class="counter-num" id="counterNum">001</span>
+              <span class="counter-unit">번째 사진</span>
+            </div>
+            <button class="btn-reset" id="btnReset" onclick="resetCounter()">
+              🔄 번호 초기화
+            </button>
+          </div>
+        </div>
+
+        <!-- 4. 서비스 시작 / 중지 -->
+        <div class="btn-group">
+          <button class="btn-main btn-start" id="btnStart" onclick="startService()">
+            <span class="btn-icon">▶</span>
+            서비스 시작
+            <span class="btn-sub">자동 이름변경 ON</span>
+          </button>
+          <button class="btn-main btn-stop" id="btnStop" onclick="stopService()" disabled>
+            <span class="btn-icon">■</span>
+            서비스 중지
+            <span class="btn-sub">이름변경 중단</span>
+          </button>
+        </div>
+
+      </div><!-- /content -->
+
+      <div class="bottom-hint" id="bottomHint">
+        서비스 시작 후 카메라 앱으로 촬영하면<br>파일명이 자동으로 변경됩니다
+      </div>
+
+    </div><!-- /screen -->
+  </div><!-- /phone -->
+  <div class="phone-label">다크 테마 · 오렌지 포인트</div>
+</div>
+
+<!-- ── 가이드 패널 ── -->
+<div class="guide">
+
+  <div>
+    <div class="guide-title">UI 구성<br><em>화면 설명</em></div>
+    <div class="guide-sub">실제 구현 기능만 포함한<br>인터랙티브 미리보기입니다</div>
+  </div>
+
+  <div class="interact-note">
+    <strong>▶ 직접 조작해보세요</strong><br>
+    · 현장명 / 접두어 입력 → 파일명 실시간 변경<br>
+    · <strong>서비스 시작</strong> → 상태 변경 + 플로팅 버튼 표시<br>
+    · <strong>번호 초기화</strong> (앱 내 버튼 또는 플로팅 버튼)<br>
+    · 플로팅 버튼은 드래그로 이동 가능
+  </div>
+
+  <hr class="divider">
+
+  <!-- 팔레트 -->
+  <div>
+    <div class="section-title">🎨 컬러 팔레트</div>
+    <div class="swatches">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FF6B00"></div>
+        <div class="swatch-name">#FF6B00<br>메인오렌지</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#0E0F13"></div>
+        <div class="swatch-name">#0E0F13<br>배경</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#1F2230"></div>
+        <div class="swatch-name">#1F2230<br>카드</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#00C851"></div>
+        <div class="swatch-name">#00C851<br>서비스ON</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FF3B3B"></div>
+        <div class="swatch-name">#FF3B3B<br>중지버튼</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#FFD600"></div>
+        <div class="swatch-name">#FFD600<br>초기화</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- 기능 목록 -->
+  <div>
+    <div class="section-title">✅ 구현된 기능</div>
+    <div class="feature-list">
+
+      <div class="feature-item">
+        <div class="feature-icon fi-org" style="background:rgba(21,101,192,0.12);">📁</div>
+        <div class="feature-text">
+          <h4>감시 폴더 선택</h4>
+          <p>처리할 사진 폴더를 직접 지정.<br>미선택 시 기본 카메라(DCIM) 폴더 감시</p>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon fi-org">🏗️</div>
+        <div class="feature-text">
+          <h4>현장명 + 접두어 입력</h4>
+          <p>두 필드 조합 → <code style="color:var(--orange-lt);font-size:10px">현장명-접두어-001.jpg</code><br>현장명 생략 시 <code style="color:var(--orange-lt);font-size:10px">접두어-001.jpg</code></p>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon fi-grn">👁️</div>
+        <div class="feature-text">
+          <h4>파일명 실시간 미리보기</h4>
+          <p>입력 즉시 최종 파일명 확인.<br>구성요소별 색상 칩으로 표시</p>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon fi-yel">🔢</div>
+        <div class="feature-text">
+          <h4>번호 카운터 + 초기화</h4>
+          <p>촬영 시 자동 증가(001→002→…).<br>현장 변경 시 초기화 버튼으로 001 리셋</p>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon fi-org">▶</div>
+        <div class="feature-text">
+          <h4>서비스 시작 / 중지</h4>
+          <p>시작: 백그라운드 감시 ON + 알림 표시<br>중지: 자동 이름변경 OFF</p>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon fi-yel">🟡</div>
+        <div class="feature-text">
+          <h4>플로팅 버튼 (오버레이)</h4>
+          <p>카메라 앱 위에 항상 표시.<br>드래그 이동 가능. 탭하면 번호 초기화 + 진동 피드백</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div style="font-size:11px; color:var(--text-dim); line-height:1.9;">
+    <div style="font-weight:700; color:var(--text); margin-bottom:4px;">📐 개발 참고</div>
+    앱 이름: <code style="color:var(--orange-lt)">Smart Field Snap</code><br>
+    파일명 형식: <code style="color:var(--orange-lt)">현장명-접두어-001.jpg</code><br>
+    카드 Radius: 16dp<br>
+    버튼 최소 높이: 56dp (장갑 착용 고려)<br>
+    저장: SharedPreferences (현장명·접두어·카운터·폴더URI)<br>
+    폴더 선택: ACTION_OPEN_DOCUMENT_TREE (SAF)<br>
+    플로팅: WindowManager TYPE_APPLICATION_OVERLAY
+  </div>
+
+</div><!-- /guide -->
+
+<script>
+  let counter = 1;
+  let serviceRunning = false;
+
+  // 입력 변경 시 미리보기 업데이트
+  document.getElementById('inputSite').addEventListener('input', updatePreview);
+  document.getElementById('inputPrefix').addEventListener('input', updatePreview);
+
+  function updatePreview() {
+    const site   = document.getElementById('inputSite').value.trim();
+    const prefix = document.getElementById('inputPrefix').value.trim() || 'img';
+    const num    = String(counter).padStart(3, '0');
+
+    const filename = site ? `${site}-${prefix}-${num}.jpg` : `${prefix}-${num}.jpg`;
+    document.getElementById('previewName').textContent = filename;
+    document.getElementById('chipNum').textContent = num;
+
+    const chipSite = document.getElementById('chipSite');
+    if (site) {
+      chipSite.textContent = site;
+      chipSite.style.display = 'inline-block';
+    } else {
+      chipSite.style.display = 'none';
+    }
+    document.getElementById('chipPre').textContent = prefix;
+  }
+
+  function clearField(id) {
+    document.getElementById(id).value = '';
+    updatePreview();
+    document.getElementById(id).focus();
+  }
+
+  function resetCounter() {
+    counter = 1;
+    const el = document.getElementById('counterNum');
+    el.style.color = '#FFD600';
+    el.textContent = '001';
+    setTimeout(() => { el.style.color = 'var(--orange)'; }, 600);
+    updatePreview();
+  }
+
+  function startService() {
+    serviceRunning = true;
+    // 헤더 상태 배지
+    const badge = document.getElementById('statusBadge');
+    badge.className = 'status-badge active';
+    document.getElementById('statusText').textContent = '서비스 중';
+
+    // 버튼 상태
+    document.getElementById('btnStart').disabled = true;
+    document.getElementById('btnStop').disabled  = false;
+
+    // 플로팅 버튼 표시
+    const fb = document.getElementById('floatingBtn');
+    fb.classList.add('visible');
+    const hint = document.getElementById('dragHint');
+    hint.classList.add('visible');
+    setTimeout(() => hint.classList.remove('visible'), 2500);
+
+    // 하단 힌트
+    document.getElementById('bottomHint').innerHTML =
+      '✅ 서비스 실행 중 — 카메라로 촬영하면<br>파일명이 자동으로 변경됩니다';
+    document.getElementById('bottomHint').style.color = 'var(--green)';
+  }
+
+  function stopService() {
+    serviceRunning = false;
+    const badge = document.getElementById('statusBadge');
+    badge.className = 'status-badge inactive';
+    document.getElementById('statusText').textContent = '대기 중';
+
+    document.getElementById('btnStart').disabled = false;
+    document.getElementById('btnStop').disabled  = true;
+
+    document.getElementById('floatingBtn').classList.remove('visible');
+    document.getElementById('bottomHint').innerHTML =
+      '서비스 시작 후 카메라 앱으로 촬영하면<br>파일명이 자동으로 변경됩니다';
+    document.getElementById('bottomHint').style.color = 'var(--text-dim)';
+  }
+
+  // 플로팅 버튼: 드래그 + 탭
+  (function setupFloating() {
+    const btn = document.getElementById('floatingBtn');
+    const phone = btn.closest('.phone');
+    let isDragging = false;
+    let startX, startY, origX, origY;
+
+    btn.addEventListener('mousedown', e => {
+      isDragging = false;
+      const rect = btn.getBoundingClientRect();
+      startX = e.clientX; startY = e.clientY;
+      origX  = btn.offsetLeft; origY = btn.offsetTop;
+      e.preventDefault();
+
+      const onMove = mv => {
+        const dx = mv.clientX - startX;
+        const dy = mv.clientY - startY;
+        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+          isDragging = true;
+          const phoneRect = phone.getBoundingClientRect();
+          const newLeft = Math.max(8, Math.min(phone.offsetWidth  - btn.offsetWidth  - 8, origX + dx));
+          const newTop  = Math.max(40, Math.min(phone.offsetHeight - btn.offsetHeight - 8, origY + dy));
+          btn.style.left = newLeft + 'px';
+          btn.style.top  = newTop  + 'px';
+          btn.style.right = 'auto';
+        }
+      };
+      const onUp = () => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        if (!isDragging) {
+          // 탭 → 초기화
+          resetCounter();
+          btn.style.transform = 'scale(0.88)';
+          setTimeout(() => btn.style.transform = '', 180);
+        }
+      };
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+    });
+
+    // 터치 지원
+    btn.addEventListener('touchstart', e => {
+      isDragging = false;
+      const touch = e.touches[0];
+      startX = touch.clientX; startY = touch.clientY;
+      origX = btn.offsetLeft; origY = btn.offsetTop;
+      e.preventDefault();
+    }, { passive: false });
+    btn.addEventListener('touchmove', e => {
+      const touch = e.touches[0];
+      const dx = touch.clientX - startX;
+      const dy = touch.clientY - startY;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+        isDragging = true;
+        const newLeft = Math.max(8, Math.min(phone.offsetWidth  - btn.offsetWidth  - 8, origX + dx));
+        const newTop  = Math.max(40, Math.min(phone.offsetHeight - btn.offsetHeight - 8, origY + dy));
+        btn.style.left = newLeft + 'px';
+        btn.style.top  = newTop  + 'px';
+        btn.style.right = 'auto';
+      }
+      e.preventDefault();
+    }, { passive: false });
+    btn.addEventListener('touchend', () => {
+      if (!isDragging) resetCounter();
+    });
+  })();
+
+  // 폴더 선택 시뮬레이션 (PC 미리보기용)
+  const folderExamples = [
+    '/저장공간/DCIM/Camera',
+    '/저장공간/DCIM/현장사진',
+    '/저장공간/Pictures/현장포토',
+    '/저장공간/Downloads/현장관리'
+  ];
+  let folderIdx = 0;
+
+  function selectFolder() {
+    const path = folderExamples[folderIdx % folderExamples.length];
+    folderIdx++;
+    const el = document.getElementById('folderPath');
+    el.textContent = path;
+    el.style.color = 'var(--orange-lt)';
+  }
+
+  // 초기 렌더
+  updatePreview();
+</script>
+</body>
+</html>

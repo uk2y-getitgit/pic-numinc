@@ -1,0 +1,21 @@
+# 빌드 결과물
+build/
+app/build/
+.gradle/
+local.properties
+
+# Android Studio 설정
+.idea/
+*.iml
+*.iws
+.DS_Store
+
+# Android Studio 폴더 (별도 프로젝트)
+android studio/build/
+android studio/.gradle/
+android studio/.idea/
+android studio/app/build/
+
+# APK는 제외 (배포용 제외)
+*.apk
+*.aab

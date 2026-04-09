@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <!-- 앱 제목 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="현장 사진 관리"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#1A237E"
+            android:gravity="center"
+            android:layout_marginBottom="4dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="사진 촬영 시 파일명 자동 변경"
+            android:textSize="13sp"
+            android:textColor="#757575"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
+        <!-- 감시 폴더 선택 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="감시 폴더 (필수)"
+            android:textSize="14sp"
+            android:textColor="#424242"
+            android:textStyle="bold"
+            android:layout_marginBottom="6dp" />
+
+        <!-- 선택된 폴더 경로 표시 + 선택 버튼 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="4dp">
+
+            <TextView
+                android:id="@+id/tvFolderPath"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="폴더를 선택해주세요"
+                android:textSize="13sp"
+                android:textColor="#9E9E9E"
+                android:background="@android:color/white"
+                android:padding="12dp"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:ellipsize="start" />
+
+            <Button
+                android:id="@+id/btnSelectFolder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="폴더 선택"
+                android:textSize="13sp"
+                android:backgroundTint="#1565C0"
+                android:layout_marginStart="8dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="※ 카메라 저장 폴더(DCIM/Camera)를 선택하세요. 선택한 폴더의 새 사진만 처리됩니다."
+            android:textSize="11sp"
+            android:textColor="#9E9E9E"
+            android:layout_marginBottom="20dp" />
+
+        <!-- 현장명 입력 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="현장명 (선택)"
+            android:textSize="14sp"
+            android:textColor="#424242"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <EditText
+            android:id="@+id/etSiteName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="예: A현장, 3동외벽, 지하주차장"
+            android:inputType="text"
+            android:background="@android:color/white"
+            android:textColor="#212121"
+            android:textColorHint="#9E9E9E"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- 접두어 입력 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="접두어 (파일명 시작 문자)"
+            android:textSize="14sp"
+            android:textColor="#424242"
+            android:textStyle="bold"
+            android:layout_marginBottom="4dp" />
+
+        <EditText
+            android:id="@+id/etPrefix"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="예: img, photo, pic"
+            android:inputType="text"
+            android:background="@android:color/white"
+            android:textColor="#212121"
+            android:textColorHint="#9E9E9E"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- 다음 파일명 표시 -->
+        <TextView
+            android:id="@+id/tvNextFileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="다음 파일명: img-001.jpg"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#2E7D32"
+            android:gravity="center"
+            android:background="@android:color/white"
+            android:padding="16dp"
+            android:layout_marginBottom="24dp" />
+
+        <!-- 서비스 시작 버튼 -->
+        <Button
+            android:id="@+id/btnStartService"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="▶  서비스 시작 (자동 변경 ON)"
+            android:textSize="15sp"
+            android:backgroundTint="#2E7D32"
+            android:layout_marginBottom="10dp" />
+
+        <!-- 구분선 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="10dp" />
+
+        <!-- 번호 초기화 버튼 -->
+        <Button
+            android:id="@+id/btnResetCounter"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="🔄  번호 초기화 — 다음 현장"
+            android:textSize="15sp"
+            android:backgroundTint="#E65100"
+            android:layout_marginBottom="10dp" />
+
+        <!-- 서비스 중지 버튼 -->
+        <Button
+            android:id="@+id/btnStopService"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="⏹  서비스 중지 (자동 변경 OFF)"
+            android:textSize="15sp"
+            android:backgroundTint="#B71C1C"
+            android:layout_marginBottom="24dp" />
+
+        <!-- 사용 안내 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📌 사용 방법\n\n1. [폴더 선택] 버튼으로 카메라 저장 폴더 선택\n2. 현장명과 접두어 입력\n3. 서비스 시작 버튼 클릭\n4. 갤럭시 카메라로 사진 촬영\n5. 자동으로 파일명이 변경됨\n6. 현장 이동 시 번호 초기화 클릭"
+            android:textSize="13sp"
+            android:textColor="#616161"
+            android:background="@android:color/white"
+            android:padding="14dp"
+            android:lineSpacingMultiplier="1.4" />
+
+    </LinearLayout>
+
+</ScrollView>

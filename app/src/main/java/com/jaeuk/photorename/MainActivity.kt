@@ -294,15 +294,21 @@ class MainActivity : AppCompatActivity() {
                     ?: parentDoc.createDirectory(siteName)
                     ?: return@withContext "오류: '$siteName' 폴더 생성에 실패했습니다."
 
+                // 이동 시작 전 대상 파일 목록을 고정 스냅샷으로 수집
+                // - siteFolder(디렉토리) 자체를 명시적으로 제외
+                // - 수집 후 이동하므로 MediaStore 갱신 영향 없음
+                val siteFolderUri = siteFolder.uri.toString()
+                val filesToMove = parentDoc.listFiles().filter { file ->
+                    val name = file.name ?: return@filter false
+                    !file.isDirectory &&
+                    file.uri.toString() != siteFolderUri &&
+                    name.startsWith(siteName)
+                }
+
                 var movedCount = 0
                 var skipCount = 0
 
-                // 현장명으로 시작하는 파일만 선별하여 이동
-                parentDoc.listFiles().forEach { file ->
-                    val name = file.name ?: return@forEach
-                    if (!file.isFile) return@forEach
-                    if (!name.startsWith(siteName)) return@forEach
-
+                filesToMove.forEach { file ->
                     if (moveFile(file, siteFolder)) movedCount++
                     else skipCount++
                 }

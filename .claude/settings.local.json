@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:gemini.google.com)",
+      "Bash(./gradlew assembleDebug)",
+      "Bash(C:/Users/user/AppData/Local/Android/Sdk/platform-tools/adb.exe install:*)",
+      "Bash(C:/Users/user/AppData/Local/Android/Sdk/platform-tools/adb.exe devices:*)",
+      "Bash(git:*)",
+      "Bash(ls gradlew*)",
+      "Bash(find . -name \"gradlew\" -maxdepth 3)",
+      "Bash(bash \"android studio/gradlew\" -p . assembleDebug)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)"
+    ]
+  }
+}

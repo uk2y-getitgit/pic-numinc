@@ -19,3 +19,4 @@ android studio/app/build/
 # APK는 제외 (배포용 제외)
 *.apk
 *.aab
+android studio/

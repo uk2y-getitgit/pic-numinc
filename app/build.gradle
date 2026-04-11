@@ -1,39 +1,70 @@
+import java.util.Properties
+
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
 }
 
+// local.properties에서 서명 정보 로드 (git에 포함되지 않음)
+def localProps = new Properties()
+rootProject.file("local.properties").withInputStream { localProps.load(it) }
+
 android {
     namespace 'com.jaeuk.photorename'
-    compileSdk 34
+    compileSdk 36  // Android 16
 
     defaultConfig {
         applicationId "com.jaeuk.photorename"
         minSdk 26
-        targetSdk 34
+        targetSdk 36  // Android 16
         versionCode 1
         versionName "1.0"
     }
 
-    buildTypes {
+    // 릴리즈 서명 설정
+    signingConfigs {
         release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            storeFile file(localProps['KEYSTORE_PATH'])
+            storePassword localProps['KEYSTORE_PASSWORD']
+            keyAlias localProps['KEY_ALIAS']
+            keyPassword localProps['KEY_PASSWORD']
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+
+    buildTypes {
+        release {
+            minifyEnabled true       // R8 코드 난독화/축소
+            shrinkResources true     // 미사용 리소스 제거
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+        }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
+    }
+
+    // .aab 번들 분할 설정 (플레이스토어 최적화)
+    bundle {
+        language { enableSplit = true }
+        density { enableSplit = true }
+        abi { enableSplit = true }
     }
 }
 
 dependencies {
-    implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'
+    implementation 'androidx.core:core-ktx:1.13.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'com.google.android.material:material:1.12.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1'
+    implementation 'androidx.documentfile:documentfile:1.0.1'
 }

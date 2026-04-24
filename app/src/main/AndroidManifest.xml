@@ -10,6 +10,9 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
 
+    <!-- 알림 권한 (Android 13 이상 필수 — 없으면 설정에서 스위치 비활성화됨) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <!-- 백그라운드 서비스 -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
@@ -31,6 +34,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- 사진 일괄 변환 화면 -->
+        <activity
+            android:name=".BatchRenameActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan" />
 
         <!-- 백그라운드 감시 서비스 -->
         <service

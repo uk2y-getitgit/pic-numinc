@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.documentfile.provider.DocumentFile
 import kotlinx.coroutines.CoroutineScope
@@ -51,6 +52,7 @@ class MainActivity : AppCompatActivity() {
         const val KEY_COUNTER = "counter"
         const val KEY_FOLDER_URI = "folder_uri"
         const val DEFAULT_PREFIX = "img"
+        const val REQUEST_NOTIFICATION_PERMISSION = 1001
     }
 
     // 권한 요청 결과 처리
@@ -84,6 +86,18 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+
+        // 알림 권한 요청 (Android 13+ 필수 — 미요청 시 설정에서 스위치 비활성화됨)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_NOTIFICATION_PERMISSION
+                )
+            }
+        }
 
         // UI 요소 연결
         etPrefix         = findViewById(R.id.etPrefix)
@@ -150,6 +164,11 @@ class MainActivity : AppCompatActivity() {
 
         // 폴더 정리 — 현장명으로 시작하는 사진을 현장명 폴더로 이동
         btnOrganizeFolder.setOnClickListener { confirmAndOrganize() }
+
+        // 하단 탭 — 일괄변환 화면 이동
+        findViewById<android.view.View>(R.id.navTabBatch).setOnClickListener {
+            startActivity(Intent(this, BatchRenameActivity::class.java))
+        }
 
         // 번호 초기화 — 현재 입력값 기준 미리보기 포함
         btnResetCounter.setOnClickListener {

@@ -59,9 +59,15 @@ class FloatingService : Service() {
             Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE
         )
+        val site   = prefs.getString(MainActivity.KEY_SITE_NAME, "") ?: ""
+        val prefix = prefs.getString(MainActivity.KEY_PREFIX, "img") ?: "img"
+        val next   = prefs.getInt(MainActivity.KEY_COUNTER, 1)
+        val nextStr = "%03d".format(next)
+        val previewName = if (site.isNotEmpty()) "$site-$prefix-$nextStr.jpg" else "$prefix-$nextStr.jpg"
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("📸 Smart Field Snap")
-            .setContentText("사진 폴더 감시 중 — 새 사진 촬영 시 자동으로 이름이 변경됩니다.")
+            .setContentTitle("📸 Smart Field Snap — 감시 중")
+            .setContentText("다음 촬영 → $previewName")
             .setSmallIcon(android.R.drawable.ic_menu_camera)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
@@ -247,12 +253,17 @@ class FloatingService : Service() {
             Intent(this, MainActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE
         )
+        val nextStr = "%03d".format(nextNumber)
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("📸 Smart Field Snap")
-            .setContentText("최신: $lastFile | 다음: %03d번".format(nextNumber))
+            .setContentTitle("✅ 저장됨: $lastFile")
+            .setContentText("다음 촬영 번호 → $nextStr")
             .setSmallIcon(android.R.drawable.ic_menu_camera)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText("저장된 파일: $lastFile\n다음 촬영 번호: $nextStr")
+            )
             .build()
         getSystemService(NotificationManager::class.java).notify(NOTIFICATION_ID, notification)
     }

@@ -535,6 +535,356 @@
   }
   .interact-note strong { color: var(--orange-lt); }
 
+  /* ── 알림창 드로어 ── */
+  .notif-drawer {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    background: rgba(18,20,28,0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-hi);
+    border-radius: 0 0 20px 20px;
+    z-index: 30;
+    transform: translateY(-100%);
+    transition: transform 0.32s cubic-bezier(.4,0,.2,1);
+    padding-bottom: 12px;
+  }
+  .notif-drawer.open { transform: translateY(0); }
+
+  .notif-drag-bar {
+    width: 36px; height: 3px;
+    background: var(--border-hi);
+    border-radius: 2px;
+    margin: 8px auto 10px;
+  }
+  .notif-shade-title {
+    padding: 0 16px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .notif-card {
+    margin: 0 10px;
+    background: var(--card);
+    border: 1px solid var(--border-hi);
+    border-radius: 14px;
+    padding: 11px 13px;
+  }
+  .notif-card-empty {
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-dim);
+    padding: 10px 0 4px;
+    letter-spacing: 0.04em;
+  }
+  .notif-app-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+  .notif-app-icon { font-size: 12px; }
+  .notif-app-name {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    flex: 1;
+    letter-spacing: 0.02em;
+  }
+  .notif-time { font-size: 9px; color: var(--text-dim); }
+  .notif-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .notif-body {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  /* ── 알림 토스트 (상단 팝업) ── */
+  .notif-toast {
+    position: absolute;
+    top: 38px; left: 8px; right: 8px;
+    background: var(--card);
+    border: 1px solid var(--border-hi);
+    border-radius: 12px;
+    padding: 9px 12px;
+    z-index: 35;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.22s, transform 0.22s;
+    pointer-events: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  }
+  .notif-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── 하단 탭 네비게이션 ── */
+  .bottom-tabs {
+    display: flex;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+    gap: 2px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: none;
+    background: transparent;
+    font-family: 'Noto Sans KR', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tab-item:hover { background: rgba(255,255,255,0.04); }
+  .tab-item.active-home { background: rgba(255,107,0,0.05); }
+  .tab-item.active-batch { background: rgba(124,58,237,0.05); }
+  .tab-icon { font-size: 20px; }
+  .tab-label { font-size: 10px; font-weight: 700; }
+  .tab-item.active-home  .tab-label { color: var(--orange-lt); }
+  .tab-item.active-batch .tab-label { color: #9F67FF; }
+  .tab-item:not(.active-home):not(.active-batch) .tab-label { color: var(--text-dim); }
+  .tab-divider { width: 1px; background: var(--border); flex-shrink: 0; }
+
+  /* ── 일괄변환 화면 ── */
+  .screen-batch {
+    display: none;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+  }
+  .screen-batch.visible { display: flex; }
+  .screen-home {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    overflow: hidden;
+  }
+  .screen-home.hidden { display: none; }
+
+  .batch-header {
+    padding: 10px 16px 10px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .batch-back {
+    width: 32px; height: 32px;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: sans-serif;
+  }
+  .batch-back:hover { background: rgba(255,255,255,0.06); color: var(--text); }
+  .batch-title-wrap { flex: 1; }
+  .batch-title { font-size: 17px; font-weight: 900; letter-spacing: -0.02em; }
+  .batch-subtitle { font-size: 10px; color: var(--text-dim); margin-top: 1px; }
+  .batch-badge {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(124,58,237,0.12);
+    color: #9F67FF;
+    border: 1px solid rgba(124,58,237,0.3);
+  }
+
+  .batch-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .batch-scroll::-webkit-scrollbar { display: none; }
+
+  .batch-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .batch-card-label {
+    padding: 9px 13px 0;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .batch-card-label.purple::before { content: ''; width: 3px; height: 10px; background: #7C3AED; border-radius: 2px; }
+  .batch-card-label.green::before  { content: ''; width: 3px; height: 10px; background: var(--green); border-radius: 2px; }
+  .batch-card-inner { padding: 8px 13px 12px; display: flex; flex-direction: column; gap: 6px; }
+
+  .batch-folder-path {
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .batch-folder-path.selected { color: var(--orange-lt); }
+
+  .btn-batch-folder {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 9px 12px;
+    background: rgba(124,58,237,0.10);
+    border: 1px solid rgba(124,58,237,0.3);
+    border-radius: 9px;
+    color: #9F67FF;
+    font-size: 12px; font-weight: 700;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-batch-folder:hover  { background: rgba(124,58,237,0.18); }
+  .btn-batch-folder:active { transform: scale(0.96); }
+
+  /* 파일 목록 카드 */
+  .file-list-card { display: none; background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .file-list-card.visible { display: block; }
+  .file-stat-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 13px 2px;
+  }
+  .file-stat-count { font-size: 12px; font-weight: 700; color: var(--green); }
+  .file-stat-date  { font-size: 10px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+  .file-list-box {
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin: 0 13px 12px;
+    max-height: 100px;
+    overflow-y: auto;
+  }
+  .file-list-box::-webkit-scrollbar { width: 3px; }
+  .file-list-box::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
+  .file-item { font-size: 10px; font-family: 'JetBrains Mono', monospace; color: var(--text-dim); padding: 1px 0; }
+
+  /* 변환 설정 입력 */
+  .batch-field {
+    display: flex; align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: 9px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .batch-field:focus-within { border-color: #7C3AED; box-shadow: 0 0 0 2px rgba(124,58,237,0.15); }
+  .batch-field-pfx {
+    padding: 0 9px; font-size: 10px; color: var(--text-dim);
+    background: rgba(255,255,255,0.03); border-right: 1px solid var(--border);
+    height: 38px; display: flex; align-items: center; white-space: nowrap; flex-shrink: 0;
+  }
+  .batch-field-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--text); font-size: 12px; font-family: 'Noto Sans KR', sans-serif;
+    padding: 8px 8px; height: 38px;
+  }
+  .batch-field-input::placeholder { color: var(--text-dim); }
+  .batch-field-clear {
+    width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+    color: var(--text-dim); cursor: pointer; font-size: 11px; margin-right: 2px;
+    border-radius: 5px; transition: background 0.15s;
+  }
+  .batch-field-clear:hover { background: rgba(255,255,255,0.06); }
+
+  /* 미리보기 카드 */
+  .preview-batch-card {
+    display: none;
+    background: rgba(124,58,237,0.05);
+    border: 1px solid rgba(124,58,237,0.2);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .preview-batch-card.visible { display: block; }
+  .preview-batch-list {
+    background: var(--surface);
+    border: 1px solid var(--border-hi);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin: 0 13px 12px;
+  }
+  .preview-arrow-row { font-size: 10px; font-family: 'JetBrains Mono', monospace; padding: 2px 0; }
+  .preview-arrow-row .from { color: var(--text-dim); }
+  .preview-arrow-row .to   { color: #9F67FF; font-weight: 700; }
+
+  /* 변환 버튼 */
+  .btn-convert {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px;
+    background: rgba(124,58,237,0.12);
+    border: 1px solid rgba(124,58,237,0.35);
+    border-radius: 12px;
+    color: #9F67FF;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.15s, transform 0.1s;
+    width: 100%;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .btn-convert.enabled { opacity: 1; pointer-events: auto; }
+  .btn-convert.enabled:hover  { background: rgba(124,58,237,0.22); }
+  .btn-convert.enabled:active { transform: scale(0.97); }
+
+  /* ── 촬영 시뮬레이션 버튼 ── */
+  .btn-simulate {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    padding: 12px 14px;
+    background: rgba(0,200,81,0.08);
+    border: 1px solid rgba(0,200,81,0.3);
+    border-radius: 12px;
+    color: var(--green);
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.15s, transform 0.1s;
+    width: 100%;
+  }
+  .btn-simulate.visible { display: flex; }
+  .btn-simulate:hover  { background: rgba(0,200,81,0.16); }
+  .btn-simulate:active { transform: scale(0.96); }
+  .simulate-sub { font-size: 10px; font-weight: 400; opacity: 0.7; }
+
+  /* ── 상태바 알림 아이콘 ── */
+  .statusbar-notif {
+    font-size: 10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .statusbar-notif.visible { opacity: 1; }
+
   @media (max-width: 780px) {
     body { padding: 24px 12px; }
     .guide { max-width: 375px; }
@@ -552,6 +902,26 @@
       <div class="notch-speaker"></div>
     </div>
 
+    <!-- 알림창 드로어 (상단에서 내려옴) -->
+    <div class="notif-drawer" id="notifDrawer">
+      <div class="notif-drag-bar"></div>
+      <div class="notif-shade-title">알림</div>
+      <div id="notifCardArea">
+        <div class="notif-card-empty" id="notifEmpty">알림 없음</div>
+      </div>
+    </div>
+
+    <!-- 알림 토스트 팝업 (촬영 시 잠깐 표시) -->
+    <div class="notif-toast" id="notifToast">
+      <div class="notif-app-row">
+        <span class="notif-app-icon">📷</span>
+        <span class="notif-app-name">Smart Field Snap</span>
+        <span class="notif-time">방금</span>
+      </div>
+      <div class="notif-title" id="toastTitle">저장됨: —</div>
+      <div class="notif-body" id="toastBody">다음 촬영 번호 → —</div>
+    </div>
+
     <!-- 플로팅 버튼 (서비스 ON 시 표시) -->
     <button class="floating-btn" id="floatingBtn" title="번호 초기화 (드래그 이동 가능)">
       <span class="floating-icon">🔄</span>
@@ -559,11 +929,16 @@
     </button>
     <div class="drag-hint" id="dragHint">드래그로 이동</div>
 
-    <div class="screen">
-      <!-- 상태바 -->
-      <div class="statusbar">
+    <div class="screen" style="flex-direction:column; display:flex;">
+
+      <!-- ══ 홈 화면 ══ -->
+      <div class="screen-home" id="screenHome">
+
+      <!-- 상태바 (탭하면 알림창 열림) -->
+      <div class="statusbar" onclick="toggleNotifDrawer()" style="cursor:pointer;" title="탭하면 알림창 열기/닫기">
         <span>09:41</span>
         <div style="display:flex;align-items:center;gap:4px;">
+          <span class="statusbar-notif" id="statusbarNotif">📷</span>
           <span>▲▲▲</span>
           <span>WiFi</span>
           <div class="bat"></div>
@@ -673,6 +1048,12 @@
           </div>
         </div>
 
+        <!-- 4-1. 촬영 시뮬레이션 버튼 (서비스 실행 중에만 표시) -->
+        <button class="btn-simulate" id="btnSimulate" onclick="simulatePhoto()">
+          <span style="font-size:18px;">📷</span>
+          <span>촬영 시뮬레이션<br><span class="simulate-sub">탭하면 알림창 내용이 갱신됩니다</span></span>
+        </button>
+
         <!-- 4. 서비스 시작 / 중지 -->
         <div class="btn-group">
           <button class="btn-main btn-start" id="btnStart" onclick="startService()">
@@ -693,6 +1074,99 @@
         서비스 시작 후 카메라 앱으로 촬영하면<br>파일명이 자동으로 변경됩니다
       </div>
 
+      </div><!-- /screen-home -->
+
+      <!-- ══ 일괄변환 화면 ══ -->
+      <div class="screen-batch" id="screenBatch">
+
+        <!-- 헤더 -->
+        <div class="batch-header">
+          <button class="batch-back" onclick="switchTab('home')">←</button>
+          <div class="batch-title-wrap">
+            <div class="batch-title">📋 사진 일괄 변환</div>
+            <div class="batch-subtitle">폴더 내 사진 이름 일괄 변경</div>
+          </div>
+          <div class="batch-badge">일괄변환</div>
+        </div>
+
+        <!-- 스크롤 본문 -->
+        <div class="batch-scroll">
+
+          <!-- 1. 폴더 선택 -->
+          <div class="batch-card">
+            <div class="batch-card-label purple">📁 변환할 폴더 선택</div>
+            <div class="batch-card-inner">
+              <div class="batch-folder-path" id="batchFolderPath">폴더 미선택</div>
+              <button class="btn-batch-folder" onclick="selectBatchFolder()">
+                📂 갤러리에서 폴더 선택
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. 발견된 파일 목록 (폴더 선택 후 표시) -->
+          <div class="file-list-card" id="fileListCard">
+            <div class="batch-card-label green" style="padding-top:9px;">🖼️ 발견된 사진 목록</div>
+            <div class="file-stat-row">
+              <span class="file-stat-count" id="fileStatCount">0개</span>
+              <span class="file-stat-date" id="fileStatDate"></span>
+            </div>
+            <div class="file-list-box" id="fileListBox"></div>
+          </div>
+
+          <!-- 3. 변환 설정 -->
+          <div class="batch-card">
+            <div class="batch-card-label purple">🏗️ 변환 설정</div>
+            <div class="batch-card-inner">
+              <div class="batch-field">
+                <div class="batch-field-pfx">현장명</div>
+                <input class="batch-field-input" id="batchSite" type="text"
+                       placeholder="예) 현장명 (선택)" oninput="updateBatchPreview()">
+                <div class="batch-field-clear" onclick="clearBatchField('batchSite')">✕</div>
+              </div>
+              <div class="batch-field">
+                <div class="batch-field-pfx">접두어</div>
+                <input class="batch-field-input" id="batchPrefix" type="text"
+                       placeholder="예) 결함, 외벽" oninput="updateBatchPreview()">
+                <div class="batch-field-clear" onclick="clearBatchField('batchPrefix')">✕</div>
+              </div>
+              <div class="batch-field">
+                <div class="batch-field-pfx">시작번호</div>
+                <input class="batch-field-input" id="batchStartNum" type="number"
+                       value="1" min="1" style="font-family:'JetBrains Mono',monospace;"
+                       oninput="updateBatchPreview()">
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. 변환 결과 미리보기 -->
+          <div class="preview-batch-card" id="previewBatchCard">
+            <div class="batch-card-label purple" style="padding-top:9px;">👁️ 변환 결과 미리보기 (처음 5개)</div>
+            <div class="preview-batch-list" id="batchPreviewList"></div>
+          </div>
+
+          <!-- 5. 변환 버튼 -->
+          <button class="btn-convert" id="btnConvert" onclick="confirmBatchConvert()">
+            <span style="font-size:16px;">📋</span>
+            일괄 변환 시작
+          </button>
+
+        </div><!-- /batch-scroll -->
+
+      </div><!-- /screen-batch -->
+
+      <!-- ══ 하단 탭 네비게이션 ══ -->
+      <div class="bottom-tabs">
+        <button class="tab-item active-home" id="tabHome" onclick="switchTab('home')">
+          <span class="tab-icon">🏠</span>
+          <span class="tab-label">홈</span>
+        </button>
+        <div class="tab-divider"></div>
+        <button class="tab-item" id="tabBatch" onclick="switchTab('batch')">
+          <span class="tab-icon">📋</span>
+          <span class="tab-label">일괄변환</span>
+        </button>
+      </div>
+
     </div><!-- /screen -->
   </div><!-- /phone -->
   <div class="phone-label">다크 테마 · 오렌지 포인트</div>
@@ -710,6 +1184,8 @@
     <strong>▶ 직접 조작해보세요</strong><br>
     · 현장명 / 접두어 입력 → 파일명 실시간 변경<br>
     · <strong>서비스 시작</strong> → 상태 변경 + 플로팅 버튼 표시<br>
+    · <strong>📷 촬영 시뮬레이션</strong> → 알림 토스트 + 알림창 갱신<br>
+    · <strong>상태바 탭</strong> → 알림창(드로어) 열기/닫기<br>
     · <strong>번호 초기화</strong> (앱 내 버튼 또는 플로팅 버튼)<br>
     · 플로팅 버튼은 드래그로 이동 가능
   </div>
@@ -795,10 +1271,37 @@
       </div>
 
       <div class="feature-item">
+        <div class="feature-icon fi-grn">🔔</div>
+        <div class="feature-text">
+          <h4>알림창 표기 (촬영 시 갱신)</h4>
+          <p>
+            <b style="color:var(--text)">대기 중:</b> 다음 촬영 예정 파일명<br>
+            <b style="color:var(--text)">촬영 후:</b> 저장된 파일명 + 다음 번호<br>
+            <code style="color:var(--orange-lt);font-size:10px">✅ 저장됨: 현장명-접두어-005.jpg</code><br>
+            <code style="color:var(--orange-lt);font-size:10px">다음 촬영 번호 → 006</code><br>
+            <span style="color:var(--text-dim)">상태바 탭 → 알림창 열기/닫기</span>
+          </p>
+        </div>
+      </div>
+
+      <div class="feature-item">
         <div class="feature-icon fi-yel">🟡</div>
         <div class="feature-text">
           <h4>플로팅 버튼 (오버레이)</h4>
           <p>카메라 앱 위에 항상 표시.<br>드래그 이동 가능. 탭하면 번호 초기화 + 진동 피드백</p>
+        </div>
+      </div>
+
+      <div class="feature-item">
+        <div class="feature-icon" style="background:rgba(124,58,237,0.12);">📋</div>
+        <div class="feature-text">
+          <h4>사진 일괄 변환 (하단 탭)</h4>
+          <p>
+            폴더 선택 → 사진 목록 확인 → 현장명/접두어/시작번호 설정 → 변환<br>
+            <b style="color:var(--text)">정렬 기준:</b> 오래된 사진 → 001번<br>
+            <b style="color:var(--text)">번호 규칙:</b> 순번 절대 변형 없음<br>
+            <code style="color:#9F67FF;font-size:10px">예) camera폴더 18개 → 현장-결함-001~018.jpg</code>
+          </p>
         </div>
       </div>
 
@@ -823,6 +1326,9 @@
 <script>
   let counter = 1;
   let serviceRunning = false;
+  let notifDrawerOpen = false;
+  let lastSavedFile = null;
+  let toastTimer = null;
 
   // 입력 변경 시 미리보기 업데이트
   document.getElementById('inputSite').addEventListener('input', updatePreview);
@@ -860,29 +1366,34 @@
     el.textContent = '001';
     setTimeout(() => { el.style.color = 'var(--orange)'; }, 600);
     updatePreview();
+    // 알림창 초기화
+    lastSavedFile = null;
+    document.getElementById('statusbarNotif').classList.remove('visible');
+    const existing = document.getElementById('notifPersistent');
+    if (existing) existing.remove();
+    document.getElementById('notifEmpty').style.display = '';
   }
 
   function startService() {
     serviceRunning = true;
-    // 헤더 상태 배지
     const badge = document.getElementById('statusBadge');
     badge.className = 'status-badge active';
     document.getElementById('statusText').textContent = '서비스 중';
 
-    // 버튼 상태
     document.getElementById('btnStart').disabled = true;
     document.getElementById('btnStop').disabled  = false;
 
-    // 플로팅 버튼 표시
     const fb = document.getElementById('floatingBtn');
     fb.classList.add('visible');
     const hint = document.getElementById('dragHint');
     hint.classList.add('visible');
     setTimeout(() => hint.classList.remove('visible'), 2500);
 
-    // 하단 힌트
+    // 촬영 시뮬레이션 버튼 표시
+    document.getElementById('btnSimulate').classList.add('visible');
+
     document.getElementById('bottomHint').innerHTML =
-      '✅ 서비스 실행 중 — 카메라로 촬영하면<br>파일명이 자동으로 변경됩니다';
+      '✅ 서비스 실행 중 — 아래 <b style="color:var(--green)">촬영 시뮬레이션</b> 버튼으로<br>알림창 내용을 확인하세요';
     document.getElementById('bottomHint').style.color = 'var(--green)';
   }
 
@@ -896,9 +1407,85 @@
     document.getElementById('btnStop').disabled  = true;
 
     document.getElementById('floatingBtn').classList.remove('visible');
+    document.getElementById('btnSimulate').classList.remove('visible');
+
+    // 알림창 닫기
+    if (notifDrawerOpen) toggleNotifDrawer();
+    document.getElementById('statusbarNotif').classList.remove('visible');
+
     document.getElementById('bottomHint').innerHTML =
       '서비스 시작 후 카메라 앱으로 촬영하면<br>파일명이 자동으로 변경됩니다';
     document.getElementById('bottomHint').style.color = 'var(--text-dim)';
+  }
+
+  // 촬영 시뮬레이션 — 카운터 증가 + 알림 표시
+  function simulatePhoto() {
+    const site   = document.getElementById('inputSite').value.trim();
+    const prefix = document.getElementById('inputPrefix').value.trim() || 'img';
+    const num    = String(counter).padStart(3, '0');
+    const savedFile = site ? `${site}-${prefix}-${num}.jpg` : `${prefix}-${num}.jpg`;
+    counter++;
+    const nextNum = String(counter).padStart(3, '0');
+
+    lastSavedFile = savedFile;
+
+    // 카운터 UI 업데이트
+    const el = document.getElementById('counterNum');
+    el.style.color = '#00C851';
+    el.textContent = nextNum;
+    setTimeout(() => { el.style.color = 'var(--orange)'; }, 600);
+    updatePreview();
+
+    // 상태바 알림 아이콘 표시
+    document.getElementById('statusbarNotif').classList.add('visible');
+
+    // 알림 토스트 표시 (상단 팝업)
+    showNotifToast(savedFile, nextNum);
+
+    // 알림창 드로어 내용 업데이트
+    updateNotifCard(savedFile, nextNum);
+  }
+
+  function showNotifToast(savedFile, nextNum) {
+    const toast = document.getElementById('notifToast');
+    document.getElementById('toastTitle').textContent = `✅ 저장됨: ${savedFile}`;
+    document.getElementById('toastBody').textContent  = `다음 촬영 번호 → ${nextNum}`;
+
+    if (toastTimer) clearTimeout(toastTimer);
+    toast.classList.remove('show');
+    // 강제 reflow
+    void toast.offsetWidth;
+    toast.classList.add('show');
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  function updateNotifCard(savedFile, nextNum) {
+    document.getElementById('notifEmpty').style.display = 'none';
+    const area = document.getElementById('notifCardArea');
+
+    // 기존 카드 제거 후 재생성
+    const existing = document.getElementById('notifPersistent');
+    if (existing) existing.remove();
+
+    const card = document.createElement('div');
+    card.className = 'notif-card';
+    card.id = 'notifPersistent';
+    card.innerHTML = `
+      <div class="notif-app-row">
+        <span class="notif-app-icon">📷</span>
+        <span class="notif-app-name">Smart Field Snap</span>
+        <span class="notif-time">방금</span>
+      </div>
+      <div class="notif-title">✅ 저장됨: ${savedFile}</div>
+      <div class="notif-body">다음 촬영 번호 → ${nextNum}</div>
+    `;
+    area.appendChild(card);
+  }
+
+  function toggleNotifDrawer() {
+    if (!serviceRunning && !lastSavedFile) return;
+    notifDrawerOpen = !notifDrawerOpen;
+    document.getElementById('notifDrawer').classList.toggle('open', notifDrawerOpen);
   }
 
   // 플로팅 버튼: 드래그 + 탭
@@ -969,7 +1556,147 @@
     });
   })();
 
-  // 폴더 선택 시뮬레이션 (PC 미리보기용)
+  // ── 탭 전환 ──────────────────────────────────────────────
+  function switchTab(tab) {
+    const home  = document.getElementById('screenHome');
+    const batch = document.getElementById('screenBatch');
+    const tabH  = document.getElementById('tabHome');
+    const tabB  = document.getElementById('tabBatch');
+
+    if (tab === 'home') {
+      home.classList.remove('hidden');
+      batch.classList.remove('visible');
+      tabH.className = 'tab-item active-home';
+      tabB.className = 'tab-item';
+    } else {
+      home.classList.add('hidden');
+      batch.classList.add('visible');
+      tabH.className = 'tab-item';
+      tabB.className = 'tab-item active-batch';
+    }
+  }
+
+  // ── 일괄변환 화면 ────────────────────────────────────────
+  const batchFolderExamples = [
+    { path: '/내장 저장공간/DCIM/Camera',    count: 18,
+      files: ['20260401_091023.jpg','20260402_143210.jpg','20260403_092115.jpg',
+              '20260404_105330.jpg','20260405_141200.jpg','20260406_093018.jpg',
+              '20260407_114522.jpg','20260408_162301.jpg','20260409_091807.jpg',
+              '20260410_103415.jpg','20260411_145002.jpg','20260412_083219.jpg',
+              '20260413_112045.jpg','20260414_144310.jpg','20260415_091622.jpg',
+              '20260416_103017.jpg','20260417_134508.jpg','20260418_091233.jpg'],
+      oldest: '2026.04.01 09:10', newest: '2026.04.18 09:12' },
+    { path: '/내장 저장공간/DCIM/현장사진', count: 7,
+      files: ['IMG_20260301_0001.jpg','IMG_20260302_0002.jpg','IMG_20260303_0003.jpg',
+              'IMG_20260304_0004.jpg','IMG_20260305_0005.jpg','IMG_20260306_0006.jpg',
+              'IMG_20260307_0007.jpg'],
+      oldest: '2026.03.01 08:00', newest: '2026.03.07 17:30' },
+  ];
+  let batchFolderIdx = 0;
+  let batchLoadedFiles = [];
+
+  function selectBatchFolder() {
+    const sample = batchFolderExamples[batchFolderIdx % batchFolderExamples.length];
+    batchFolderIdx++;
+
+    const pathEl = document.getElementById('batchFolderPath');
+    pathEl.textContent = sample.path;
+    pathEl.classList.add('selected');
+
+    batchLoadedFiles = sample.files;
+
+    // 파일 목록 카드 표시
+    document.getElementById('fileStatCount').textContent = `발견된 이미지: ${sample.count}개`;
+    document.getElementById('fileStatDate').textContent  = `기간: ${sample.oldest}  →  ${sample.newest}`;
+
+    const listBox = document.getElementById('fileListBox');
+    listBox.innerHTML = '';
+    sample.files.forEach((f, i) => {
+      const d = document.createElement('div');
+      d.className = 'file-item';
+      d.textContent = `${String(i+1).padStart(2,' ')}.  ${f}`;
+      listBox.appendChild(d);
+    });
+    if (sample.count > sample.files.length) {
+      const d = document.createElement('div');
+      d.className = 'file-item';
+      d.textContent = `   ⋯ 외 ${sample.count - sample.files.length}개`;
+      listBox.appendChild(d);
+    }
+
+    document.getElementById('fileListCard').classList.add('visible');
+    updateBatchPreview();
+  }
+
+  function updateBatchPreview() {
+    if (batchLoadedFiles.length === 0) return;
+
+    const site     = document.getElementById('batchSite').value.trim();
+    const prefix   = document.getElementById('batchPrefix').value.trim() || 'img';
+    const startNum = Math.max(1, parseInt(document.getElementById('batchStartNum').value) || 1);
+
+    const listEl = document.getElementById('batchPreviewList');
+    listEl.innerHTML = '';
+    const previewCount = Math.min(batchLoadedFiles.length, 5);
+
+    for (let i = 0; i < previewCount; i++) {
+      const num     = String(startNum + i).padStart(3, '0');
+      const newName = site ? `${site}-${prefix}-${num}.jpg` : `${prefix}-${num}.jpg`;
+      const div = document.createElement('div');
+      div.className = 'preview-arrow-row';
+      div.innerHTML = `<span class="from">${batchLoadedFiles[i]}</span><br>` +
+                      `&nbsp;&nbsp;→&nbsp;&nbsp;<span class="to">${newName}</span>`;
+      div.style.marginBottom = '5px';
+      listEl.appendChild(div);
+    }
+    if (batchLoadedFiles.length > 5) {
+      const d = document.createElement('div');
+      d.className = 'preview-arrow-row';
+      d.innerHTML = `<span class="from">   ⋯ 외 ${batchLoadedFiles.length - 5}개</span>`;
+      listEl.appendChild(d);
+    }
+
+    document.getElementById('previewBatchCard').classList.add('visible');
+    document.getElementById('btnConvert').classList.add('enabled');
+  }
+
+  function clearBatchField(id) {
+    document.getElementById(id).value = '';
+    updateBatchPreview();
+    document.getElementById(id).focus();
+  }
+
+  function confirmBatchConvert() {
+    if (!document.getElementById('btnConvert').classList.contains('enabled')) return;
+
+    const site     = document.getElementById('batchSite').value.trim();
+    const prefix   = document.getElementById('batchPrefix').value.trim() || 'img';
+    const startNum = Math.max(1, parseInt(document.getElementById('batchStartNum').value) || 1);
+    const count    = batchLoadedFiles.length;
+    const endNum   = String(startNum + count - 1).padStart(3, '0');
+    const first    = site ? `${site}-${prefix}-${String(startNum).padStart(3,'0')}.jpg`
+                           : `${prefix}-${String(startNum).padStart(3,'0')}.jpg`;
+    const last     = site ? `${site}-${prefix}-${endNum}.jpg`
+                           : `${prefix}-${endNum}.jpg`;
+
+    if (confirm(
+      `⚠️ 일괄 변환 확인\n\n` +
+      `총 ${count}개 파일 이름을 변경합니다.\n\n` +
+      `첫 번째:  ${first}\n` +
+      `마지막:  ${last}\n\n` +
+      `오래된 사진 → 001번부터 순서대로 적용됩니다.\n` +
+      `이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?`
+    )) {
+      const btn = document.getElementById('btnConvert');
+      btn.innerHTML = '⏳ 변환 중...';
+      setTimeout(() => {
+        btn.innerHTML = '<span style="font-size:16px;">📋</span> 일괄 변환 시작';
+        alert(`✅ ${count}개 변환 완료\n\n${first}  ~  ${last}`);
+      }, 1200);
+    }
+  }
+
+  // 폴더 선택 시뮬레이션 (PC 미리보기용) - 홈 화면용
   const folderExamples = [
     '/저장공간/DCIM/Camera',
     '/저장공간/DCIM/현장사진',

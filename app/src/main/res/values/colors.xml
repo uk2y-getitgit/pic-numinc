@@ -38,6 +38,14 @@
     <color name="teal_bg_08">#1400BCD4</color>
     <color name="teal_border_25">#4000BCD4</color>
 
+    <!-- 일괄변환 화면 보라색 포인트 -->
+    <color name="purple">#7C3AED</color>
+    <color name="purple_lt">#9F67FF</color>
+    <color name="purple_bg_05">#0D7C3AED</color>
+    <color name="purple_bg_08">#147C3AED</color>
+    <color name="purple_border_20">#337C3AED</color>
+    <color name="purple_border_25">#407C3AED</color>
+
     <!-- 기존 호환 -->
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>

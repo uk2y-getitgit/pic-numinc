@@ -7,7 +7,16 @@ plugins {
 
 // local.properties에서 서명 정보 로드 (git에 포함되지 않음)
 def localProps = new Properties()
-rootProject.file("local.properties").withInputStream { localProps.load(it) }
+def localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) {
+    localPropsFile.withInputStream { localProps.load(it) }
+}
+
+// 릴리즈 서명 키 존재 여부 확인 (debug 빌드 시 없어도 정상)
+def hasReleaseKey = localProps['KEYSTORE_PATH'] != null &&
+                    localProps['KEYSTORE_PASSWORD'] != null &&
+                    localProps['KEY_ALIAS'] != null &&
+                    localProps['KEY_PASSWORD'] != null
 
 android {
     namespace 'com.jaeuk.photorename'
@@ -21,13 +30,15 @@ android {
         versionName "1.0"
     }
 
-    // 릴리즈 서명 설정
-    signingConfigs {
-        release {
-            storeFile file(localProps['KEYSTORE_PATH'])
-            storePassword localProps['KEYSTORE_PASSWORD']
-            keyAlias localProps['KEY_ALIAS']
-            keyPassword localProps['KEY_PASSWORD']
+    // 릴리즈 서명 설정 (local.properties에 키 정보가 있을 때만 적용)
+    if (hasReleaseKey) {
+        signingConfigs {
+            release {
+                storeFile file(localProps['KEYSTORE_PATH'])
+                storePassword localProps['KEYSTORE_PASSWORD']
+                keyAlias localProps['KEY_ALIAS']
+                keyPassword localProps['KEY_PASSWORD']
+            }
         }
     }
 
@@ -36,7 +47,9 @@ android {
             minifyEnabled true       // R8 코드 난독화/축소
             shrinkResources true     // 미사용 리소스 제거
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.release
+            if (hasReleaseKey) {
+                signingConfig signingConfigs.release
+            }
         }
         debug {
             applicationIdSuffix ".debug"

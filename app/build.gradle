@@ -23,7 +23,7 @@ android {
     compileSdk 36  // Android 16
 
     defaultConfig {
-        applicationId "com.JuLab.PicNuminc"
+        applicationId "comJuLab.PicNuminc"
         minSdk 26
         targetSdk 36  // Android 16
         versionCode 1

@@ -26,8 +26,8 @@ android {
         applicationId "comJuLab.PicNuminc"
         minSdk 26
         targetSdk 36  // Android 16
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
     }
 
     // 릴리즈 서명 설정 (local.properties에 키 정보가 있을 때만 적용)
